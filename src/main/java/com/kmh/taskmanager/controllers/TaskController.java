@@ -7,6 +7,7 @@ import com.kmh.taskmanager.entities.TaskEntity;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,4 +26,18 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskEntity> getTaskById(int id) {
+        var task = taskService.getTaskById(id);
+        if (task == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(task);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<TaskEntity> addTask(String title, String description, String deadline) {
+        taskService.addTask(title, description, deadline);
+        return ResponseEntity.ok().build();
+    }
 }
