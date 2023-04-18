@@ -3,11 +3,13 @@ package com.kmh.taskmanager.controllers;
 import java.util.List;
 
 import com.kmh.taskmanager.Services.TaskService;
+import com.kmh.taskmanager.dto.CreateTaskDTO;
 import com.kmh.taskmanager.entities.TaskEntity;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,8 +38,8 @@ public class TaskController {
     }
 
     @PostMapping("")
-    public ResponseEntity<TaskEntity> addTask(String title, String description, String deadline) {
-        taskService.addTask(title, description, deadline);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body) {
+        var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
+        return ResponseEntity.ok(task);
     }
 }
