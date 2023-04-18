@@ -6,11 +6,13 @@ import java.util.List;
 import com.kmh.taskmanager.Services.TaskService;
 import com.kmh.taskmanager.dto.CreateTaskDTO;
 import com.kmh.taskmanager.dto.ErrorResponseDTO;
+import com.kmh.taskmanager.dto.UpdateTaskDTO;
 import com.kmh.taskmanager.entities.TaskEntity;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +46,15 @@ public class TaskController {
     @PostMapping("")
     public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body) throws ParseException {
         var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
+        return ResponseEntity.ok(task);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TaskEntity> updateTask(@PathVariable Integer id, @RequestBody UpdateTaskDTO body) throws ParseException {
+        var task = taskService.updateTask(id, body.getDescription(), body.getDeadline(), body.getCompleted());
+        if(task == null){
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(task);
     }
 
