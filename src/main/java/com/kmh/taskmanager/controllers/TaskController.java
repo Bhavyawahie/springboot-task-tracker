@@ -3,12 +3,15 @@ package com.kmh.taskmanager.controllers;
 import java.text.ParseException;
 import java.util.List;
 
+import com.kmh.taskmanager.Services.NoteService;
 import com.kmh.taskmanager.Services.TaskService;
 import com.kmh.taskmanager.dto.CreateTaskDTO;
 import com.kmh.taskmanager.dto.ErrorResponseDTO;
+import com.kmh.taskmanager.dto.TaskResponseDTO;
 import com.kmh.taskmanager.dto.UpdateTaskDTO;
 import com.kmh.taskmanager.entities.TaskEntity;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
+    private final NoteService noteService;
+    private final ModelMapper modalMapper = new ModelMapper();
     //constructor that sets taskservice via dependency injection
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, NoteService noteService) {
         this.taskService = taskService;
+        this.noteService = noteService;
     }
 
     @GetMapping("") 
@@ -35,12 +41,15 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskEntity> getTaskById(@PathVariable Integer id) {
+    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable Integer id) {
         var task = taskService.getTaskById(id);
+        var notes = noteService.getTaskNotes(id);
         if (task == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(task);
+        var taskWithNotesResponse = modalMapper.map(task , TaskResponseDTO.class);
+        taskWithNotesResponse.setNotes(notes);
+        return ResponseEntity.ok(taskWithNotesResponse);
     }
 
     @PostMapping("")
